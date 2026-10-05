@@ -1,0 +1,12 @@
+# Les bibliothèques installées par Composer : elles se réinstallent par « composer install ».
+/vendor/
+
+# Les réglages et les secrets : propres à chaque machine, jamais partagés.
+/.env
+
+# Ce que les commandes préparent : pages de la documentation (wazi docs:build)
+# et templates (wazi views:compile). Tout se refabrique au déploiement.
+/build/
+
+# Ce que le site écrirait en fonctionnant.
+/var/
