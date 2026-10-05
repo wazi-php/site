@@ -1,0 +1,71 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * La console du site.
+ *
+ *     wazi                 la liste des commandes
+ *     wazi serve           lance le site sur votre ordinateur
+ *     wazi docs:import ../wazi    recopie le guide depuis le dossier du framework
+ *     wazi docs:build      prépare les pages de la documentation
+ *     wazi routes          liste les routes
+ *     wazi explain fr/docs/routes    explique ce qu'une adresse traverse
+ *     wazi views:compile   prépare les templates, pour la mise en ligne
+ *     wazi zones:install   met à jour public/wazi.js, après une mise à jour de Wazi
+ *
+ * Si la commande « wazi » n'est pas installée sur votre ordinateur, tapez
+ * « php wazi » à la place : c'est ce même fichier qui s'exécute.
+ */
+
+declare(strict_types=1);
+
+use Site\DocsBuildCommand;
+use Site\DocsImportCommand;
+use Wazi\Console\Application;
+use Wazi\Console\Command\ServeCommand;
+use Wazi\Console\Command\ZonesInstallCommand;
+use Wazi\Console\Output;
+use Wazi\Kernel\Command\ExplainCommand;
+use Wazi\Kernel\Command\RoutesCommand;
+use Wazi\Kernel\Command\ViewsCompileCommand;
+use Wazi\Kernel\Kernel;
+use Wazi\View\Kioo;
+
+// La console ne s'exécute que dans un terminal, jamais par un navigateur.
+if (PHP_SAPI !== 'cli') {
+    exit(1);
+}
+
+if (!is_file(__DIR__ . '/vendor/autoload.php')) {
+    fwrite(STDERR, 'Les bibliothèques ne sont pas installées. Lancez « composer install » dans ce dossier.' . PHP_EOL);
+
+    exit(1);
+}
+
+require __DIR__ . '/vendor/autoload.php';
+
+// L'application, la même que celle que sert le site.
+try {
+    $app = Kernel::load(__DIR__ . '/app.php');
+} catch (Throwable $error) {
+    $output = new Output(STDOUT, STDERR);
+    $output->error($error->getMessage());
+    $output->line('  ' . $error::class . ', dans ' . $error->getFile() . ', ligne ' . $error->getLine());
+
+    exit(1);
+}
+
+$console = new Application();
+
+// Les commandes de Wazi.
+$console->add(new ServeCommand(__DIR__));
+$console->add(new RoutesCommand($app->router));
+$console->add(new ExplainCommand($app));
+$console->add(new ViewsCompileCommand($app->container->get(Kioo::class)));
+$console->add(new ZonesInstallCommand(__DIR__));
+
+// Les commandes du site : la documentation.
+$console->add(new DocsImportCommand(__DIR__));
+$console->add(new DocsBuildCommand(__DIR__));
+
+exit($console->run($argv));

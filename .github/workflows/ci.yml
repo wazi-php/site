@@ -1,0 +1,113 @@
+name: CI
+
+# Sur chaque demande de fusion, et sur main après la fusion.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Ce que vérifie cette CI : le site s'installe, sa documentation se prépare,
+# et ses pages répondent.
+
+# Cette CI ne fait que lire le dépôt : elle n'a le droit de rien écrire.
+permissions:
+  contents: read
+
+# Un nouvel envoi sur la même branche arrête la vérification précédente.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  site:
+    name: PHP 8.5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: mbstring, dom
+          coverage: none
+          tools: composer
+
+      - name: Vérifier composer.json
+        run: composer validate --strict
+
+      - name: Installer les dépendances
+        run: composer install --no-interaction --no-progress
+
+      - name: Audit de sécurité des dépendances
+        run: composer audit
+
+      - name: Syntaxe de chaque fichier PHP
+        run: |
+          for fichier in app.php wazi public/index.php src/*.php lang/*.php content/guide.php; do
+            php -l "$fichier"
+          done
+
+      - name: La console démarre
+        run: |
+          php wazi
+          php wazi routes
+
+      - name: La documentation se prépare
+        run: |
+          php wazi docs:build
+          test -f build/docs/fr/sommaire.php
+          test -f build/docs/en/sommaire.php
+
+      - name: Les templates se préparent
+        run: php wazi views:compile
+
+      - name: Les pages répondent
+        run: |
+          php -S 127.0.0.1:8000 -t public > serveur.log 2>&1 &
+          SERVEUR=$!
+          sleep 2
+
+          echecs=0
+
+          # attendre <code attendu> <adresse> [options de curl...]
+          attendre() {
+            attendu=$1
+            adresse=$2
+            shift 2
+            recu=$(curl -s -o /dev/null -w '%{http_code}' "$@" "http://127.0.0.1:8000$adresse")
+
+            if [ "$recu" = "$attendu" ]; then
+              echo "ok      $attendu  $adresse $*"
+            else
+              echo "ÉCHEC   $adresse $* : $recu reçu, $attendu attendu"
+              echecs=$((echecs + 1))
+            fi
+          }
+
+          attendre 302 /
+          attendre 200 /fr
+          attendre 200 /en
+          attendre 200 /fr/docs
+          attendre 200 /en/docs
+          attendre 200 /fr/docs/prise-en-main
+          attendre 200 /en/docs/getting-started
+          attendre 200 /fr/docs/zones
+          attendre 200 /fr/journal
+          attendre 200 /en/changelog
+          attendre 200 /app.css
+          attendre 200 /wazi.js
+          # Une langue ou une page qui n'existe pas.
+          attendre 404 /de
+          attendre 404 /fr/docs/nulle-part
+          # Rien de ce qui est hors de public/ n'est servi.
+          attendre 404 /.env
+          attendre 404 /app.php
+          attendre 404 /content/guide.php
+
+          kill $SERVEUR
+
+          if [ "$echecs" -gt 0 ]; then
+            echo "--- Journal du serveur"
+            cat serveur.log
+            exit 1
+          fi
