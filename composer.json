@@ -1,0 +1,31 @@
+{
+    "name": "wazi/site",
+    "description": "Le site de Wazi : présentation du framework et documentation, écrit avec Wazi.",
+    "type": "project",
+    "license": "MIT",
+    "homepage": "https://github.com/wazi-php/site",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/wazi-php/wazi"
+        }
+    ],
+    "require": {
+        "php": "^8.5",
+        "ext-dom": "*",
+        "ext-mbstring": "*",
+        "league/commonmark": "^2.7",
+        "tempest/highlight": "^2.11",
+        "wazi/framework": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "Site\\": "src/"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

@@ -1,0 +1,56 @@
+<k:layout name="base">
+<k:block name="titre">{doc.titre}</k:block>
+
+<!-- Trois colonnes : les pages du guide, le texte, les sections de la page.
+
+     Les liens du guide portent k:update : passer d'une page à l'autre ne
+     recharge pas tout, wazi.js remplace seulement les zones nommées. Sans
+     JavaScript, ce sont des liens ordinaires. -->
+<div class="guide">
+    <nav class="guide-pages" aria-label="{t.guide.sommaire}" k:zone="sommaire">
+        <p class="libelle">{t.guide.sommaire}</p>
+        <ol>
+            <li k:for="rang, page in pages">
+                <a href="/{langue}/docs/{page.nom}" k:update="langue, sommaire, page" aria-current="{page.nom == doc.nom ? 'page' : null}">
+                    <span class="numero">{rang + 1}</span>
+                    {page.titre}
+                </a>
+            </li>
+        </ol>
+    </nav>
+
+    <div class="guide-corps" k:zone="page">
+        <article class="texte">
+            <p class="libelle">{t.guide.titre} · {doc.numero}</p>
+            <h1>{doc.titre}</h1>
+
+            <p k:if="not doc.traduite and t.guide.non_traduite != ''" class="message" role="note">{t.guide.non_traduite}</p>
+
+            <!-- Le texte de la page, préparé par « wazi docs:build » à partir du Markdown
+                 de content/. unsafe_raw : c'est du HTML fabriqué par nous (voir
+                 src/Markdown.php), pas une valeur venue d'un visiteur. -->
+            {doc.html | unsafe_raw}
+
+            <nav class="voisines" aria-label="{t.guide.sommaire}">
+                <a k:if="doc.precedente != null" class="carte" href="/{langue}/docs/{doc.precedente.nom}" k:update="langue, sommaire, page" rel="prev">
+                    <span class="libelle">{t.guide.precedente}</span>
+                    <strong>{doc.precedente.titre}</strong>
+                </a>
+                <span k:else></span>
+                <a k:if="doc.suivante != null" class="carte suivante" href="/{langue}/docs/{doc.suivante.nom}" k:update="langue, sommaire, page" rel="next">
+                    <span class="libelle">{t.guide.suivante}</span>
+                    <strong>{doc.suivante.titre}</strong>
+                </a>
+            </nav>
+
+            <p class="aide"><a href="{source}" rel="noopener">{t.guide.modifier}</a></p>
+        </article>
+
+        <nav k:if="doc.sections" class="guide-sections" aria-label="{t.guide.dans_cette_page}">
+            <p class="libelle">{t.guide.dans_cette_page}</p>
+            <ul>
+                <li k:for="section in doc.sections"><a href="#{section.id}">{section.texte}</a></li>
+            </ul>
+        </nav>
+    </div>
+</div>

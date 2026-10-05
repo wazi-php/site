@@ -1,0 +1,23 @@
+<k:layout name="base">
+<k:block name="titre">{t.journal.titre}</k:block>
+
+<div class="guide deux">
+    <div class="guide-corps">
+        <article class="texte">
+            <p class="libelle">Wazi</p>
+            <h1>{t.journal.titre}</h1>
+
+            <p k:if="not doc.traduite and t.guide.non_traduite != ''" class="message" role="note">{t.guide.non_traduite}</p>
+
+            <!-- Le journal du framework (CHANGELOG.md), préparé par « wazi docs:build ». -->
+            {doc.html | unsafe_raw}
+        </article>
+
+        <nav k:if="doc.sections" class="guide-sections" aria-label="{t.guide.dans_cette_page}">
+            <p class="libelle">{t.guide.dans_cette_page}</p>
+            <ul>
+                <li k:for="section in doc.sections"><a href="#{section.id}">{section.texte}</a></li>
+            </ul>
+        </nav>
+    </div>
+</div>

@@ -1,0 +1,23 @@
+<k:layout name="base">
+<k:block name="titre">{t.guide.titre}</k:block>
+
+<span class="pastille">{t.guide.sommaire}</span>
+<h1>{t.guide.titre}</h1>
+<p class="chapo">{t.guide.chapo}</p>
+
+<!-- Tant que « wazi docs:build » n'a pas été lancé, il n'y a rien à lister. -->
+<div k:if="not prete" class="message" role="status">
+    <strong>{t.guide.pas_prete_titre}.</strong> {t.guide.pas_prete_texte}
+</div>
+
+<ol class="sommaire">
+    <li k:for="rang, page in pages">
+        <a class="carte" href="/{langue}/docs/{page.nom}">
+            <span class="numero">{rang + 1}</span>
+            <span>
+                <strong>{page.titre}</strong>
+                <span class="resume">{page.resume}</span>
+            </span>
+        </a>
+    </li>
+</ol>

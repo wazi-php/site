@@ -10,3 +10,6 @@
 
 # Ce que le site écrirait en fonctionnant.
 /var/
+
+# Le cache de l'outil de style, quand on le lance sur ce dossier.
+/.php-cs-fixer.cache

@@ -1,0 +1,134 @@
+<k:layout name="base">
+<k:block name="titre">{t.accueil.titre_page}</k:block>
+
+<!-- L'ouverture : la promesse à gauche, un extrait de code à droite. -->
+<section class="ouverture">
+    <div>
+        <span class="pastille">{t.accueil.pastille}</span>
+        <h1>{t.accueil.titre}</h1>
+        <p class="chapo">{t.accueil.chapo}</p>
+        <div class="actions">
+            <a class="bouton" href="{debut_du_guide}">{t.accueil.action_guide}</a>
+            <a class="bouton discret" href="https://github.com/wazi-php/wazi" rel="noopener">{t.accueil.action_github}</a>
+        </div>
+    </div>
+
+    <!-- La vitrine : un extrait de code, derrière deux panneaux de verre.
+         Dans un template, une accolade qui doit s'afficher s'écrit « \{ ». -->
+    <div class="vitrine">
+        <div class="vitre haut"></div>
+        <div class="vitre bas"></div>
+        <figure class="extrait">
+            <figcaption>{t.accueil.vitrine_legende}</figcaption>
+            <pre><code><span class="discret">{t.accueil.vitrine_commentaire}</span>
+<span class="balise">#[Get(</span><span class="valeur">'/notes/\{id:int}'</span><span class="balise">)]</span>
+<span class="balise">public function</span> voir(<span class="balise">int</span> $id): ResponseInterface
+\{
+    $note = $this->db->selectOne(
+        <span class="valeur">'SELECT * FROM notes WHERE id = ?'</span>,
+        [$id],
+    );
+
+    <span class="balise">return</span> $this->kioo->page(<span class="valeur">'note'</span>, [<span class="valeur">'note'</span> => $note]);
+}</code></pre>
+        </figure>
+    </div>
+</section>
+
+<!-- Trois raisons. -->
+<div class="rubrique">
+    <h2>{t.accueil.piliers_titre}</h2>
+    <p>{t.accueil.piliers_chapo}</p>
+</div>
+
+<div class="grille trois">
+    <article k:for="pilier in t.accueil.piliers" class="carte">
+        <span class="libelle">{pilier.libelle}</span>
+        <h3>{pilier.titre}</h3>
+        <p>{pilier.texte}</p>
+    </article>
+</div>
+
+<!-- Les pièces du framework : chacune mène à sa page du guide.
+     « pieces » vient du contrôleur, qui a ajouté l'adresse de chaque page. -->
+<div class="rubrique">
+    <h2>{t.accueil.pieces_titre}</h2>
+    <p>{t.accueil.pieces_chapo}</p>
+</div>
+
+<div class="grille quatre">
+    <a k:for="piece in pieces" class="carte" href="{piece.adresse}">
+        <h3>{piece.titre}</h3>
+        <p>{piece.texte}</p>
+    </a>
+</div>
+
+<!-- Une erreur de Wazi, telle qu'il l'écrit. -->
+<section class="duo">
+    <div>
+        <h2>{t.accueil.erreur_titre}</h2>
+        <p>{t.accueil.erreur_chapo}</p>
+        <p k:if="t.accueil.erreur_note != ''" class="aide">{t.accueil.erreur_note}</p>
+    </div>
+    <figure class="extrait">
+        <figcaption>{t.accueil.erreur_legende}</figcaption>
+        <pre><code><span class="discret">&lt;ul k:zones="liste"&gt;</span>
+
+Dans le template « notes », ligne 12 :
+« k:zones » n'existe pas dans Kioo.
+<span class="valeur">Vouliez-vous écrire « k:zone » ?</span>
+Disponibles : k:if, k:else, k:for, k:zone, k:update.</code></pre>
+    </figure>
+</section>
+
+<!-- La console et la démonstration, en images. -->
+<section class="duo pleine">
+    <div>
+        <h2>{t.accueil.console_titre}</h2>
+        <p>{t.accueil.console_chapo}</p>
+    </div>
+    <img class="capture" src="/images/console.png" alt="{t.accueil.console_alt}" width="1764" height="590" loading="lazy">
+</section>
+
+<section class="duo">
+    <div>
+        <h2>{t.accueil.demo_titre}</h2>
+        <p>{t.accueil.demo_chapo}</p>
+    </div>
+    <img class="capture" src="/images/demonstration.png" alt="{t.accueil.demo_alt}" width="1280" height="806" loading="lazy">
+</section>
+
+<!-- Essayer. -->
+<section class="duo inverse">
+    <div>
+        <h2>{t.accueil.essayer_titre}</h2>
+        <p>{t.accueil.essayer_chapo}</p>
+        <p>{t.accueil.essayer_suite}</p>
+        <div class="actions">
+            <a class="bouton" href="{debut_du_guide}">{t.accueil.action_guide}</a>
+        </div>
+    </div>
+    <figure class="extrait">
+        <figcaption>Terminal</figcaption>
+        <pre><code>git clone https://github.com/wazi-php/wazi.git
+cd wazi
+composer install
+
+cd examples/demo
+php wazi db:migrate
+php wazi serve</code></pre>
+    </figure>
+</section>
+
+<!-- Les huit principes. -->
+<div class="rubrique">
+    <h2>{t.accueil.principes_titre}</h2>
+    <p>{t.accueil.principes_chapo}</p>
+</div>
+
+<ol class="principes">
+    <li k:for="principe in t.accueil.principes">
+        <strong>{principe.titre}</strong>
+        <span>{principe.texte}</span>
+    </li>
+</ol>

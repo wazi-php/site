@@ -1,0 +1,12 @@
+<k:layout name="base">
+<k:block name="titre">{t.introuvable.titre}</k:block>
+
+<section class="centre">
+    <span class="pastille">404</span>
+    <h1>{t.introuvable.titre}</h1>
+    <p class="chapo">{t.introuvable.texte}</p>
+    <div class="actions">
+        <a class="bouton" href="/{langue}">{t.introuvable.accueil}</a>
+        <a class="bouton discret" href="/{langue}/docs">{t.introuvable.guide}</a>
+    </div>
+</section>
