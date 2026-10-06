@@ -37,7 +37,9 @@ site/
 Les pages du guide sont écrites en Markdown :
 
 - `content/fr/guide/` est une copie du guide du framework (`docs/guide/` dans son dépôt). On ne la modifie pas ici : on corrige le guide dans le dépôt du framework, puis on la recopie avec `php wazi docs:import ../wazi`.
-- `content/en/guide/` contient les traductions. Une page pas encore traduite s'affiche en français, avec un mot d'explication.
+- `content/en/guide/` contient les traductions, sous le même nom de fichier ; `content/en/journal.md` est le journal en anglais. Une page pas encore traduite s'affiche en français, avec un mot d'explication.
+
+Quand une page change dans le guide du framework, sa traduction est à reprendre ici, dans la même demande de fusion que le `docs:import`. Une traduction garde les extraits de code et les liens de l'original : seuls le texte et les commentaires changent.
 
 `php wazi docs:build` transforme ces fichiers en pages prêtes à afficher, dans `build/docs/`. À relancer après chaque modification d'un texte.
 
